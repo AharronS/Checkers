@@ -1,0 +1,162 @@
+%Check whether it is possible to make a eat move, otherwise check whether there is regular move.
+get_legit_move(GameBoard, CurrentPlayer, ResGameBoard):-
+	(
+		get_player_sign(CurrentPlayer, CurrentPlayerSign),
+		get_legit_eat_movement(GameBoard, CurrentPlayerSign, ResGameBoard)
+	)
+	;
+	(
+		not(
+			get_player_sign(CurrentPlayer, CurrentPlayerSign),			
+			get_legit_eat_movement(GameBoard, CurrentPlayerSign, ResGameBoard)
+		),
+		get_player_sign(CurrentPlayer, CurrentPlayerSign2),
+		get_legit_regular_movement(GameBoard, CurrentPlayerSign2, ResGameBoard)
+	).
+
+get_legit_regular_movement(GameBoard, CurrentPlayerSign, ResGameBoard):-
+	get_element_with_sign(GameBoard, CurrentPlayerSign, PlayerLine, PlayerCol), 
+	get_element_with_sign(GameBoard, e, EmptyLine, EmptyCol),
+	is_legit_movement(GameBoard, CurrentPlayerSign, PlayerLine, PlayerCol, EmptyLine, EmptyCol, ResGameBoard).
+	
+is_legit_movement(GameBoard, CurrentPlayerSign, SrcLine, SrcCol, DstLine, DstCol, ResGameBoard):-
+	check_desire_move_position(GameBoard, CurrentPlayerSign, SrcLine, SrcCol, DstLine, DstCol),
+	insert_element_to_pos_in_board(GameBoard, SrcLine, SrcCol, e, TmpGameBoard1),
+	insert_element_to_pos_in_board(TmpGameBoard1, DstLine, DstCol, CurrentPlayerSign, ResGameBoard).
+	
+
+get_legit_eat_movement(GameBoard, CurrentPlayerSign, ResGameBoard):-
+	get_element_with_sign(GameBoard, CurrentPlayerSign, PlayerLine, PlayerCol), 
+	get_element_with_sign(GameBoard, e, EmptyLine, EmptyCol),
+	is_legit_recursive_eat_move(GameBoard, CurrentPlayerSign, PlayerLine, PlayerCol, EmptyLine, EmptyCol, ResGameBoard).
+
+%try to generate regular eat move
+is_legit_eat_move(GameBoard, CurrentPlayerSign, SrcLine, SrcCol, DstLine, DstCol, ResGameBoard):-
+	check_desire_eat_move_position(GameBoard, CurrentPlayerSign, SrcLine, SrcCol, DstLine, DstCol),
+	get_element_with_sign(GameBoard, e, DstLine, DstCol),
+	get_middle_element(SrcLine, SrcCol, DstLine, DstCol, MiddleLine, MiddleCol),
+	abs(MiddleLine, AbsMiddleLine), abs(MiddleCol, AbsMiddleCol),
+	insert_element_to_pos_in_board(GameBoard, SrcLine, SrcCol, e, TmpGameBoard1),
+	insert_element_to_pos_in_board(TmpGameBoard1, AbsMiddleLine, AbsMiddleCol, e, TmpGameBoard2),
+	insert_element_to_pos_in_board(TmpGameBoard2, DstLine, DstCol, CurrentPlayerSign, ResGameBoard).
+
+%try to generate recursive eat move
+is_legit_recursive_eat_move(GameBoard, CurrentPlayerSign, SrcLine, SrcCol, DstLine, DstCol, ResGameBoard):-
+	is_legit_eat_move(GameBoard, CurrentPlayerSign, SrcLine, SrcCol, DstLine, DstCol, ResGameBoard)
+	;
+	(
+		((CurrentPlayerSign=w; CurrentPlayerSign=kw; CurrentPlayerSign=kb),
+		NextSrcLine is SrcLine + 2)
+		;
+		((CurrentPlayerSign=w; CurrentPlayerSign=kw; CurrentPlayerSign=kb),
+		NextSrcLine is SrcLine - 2)
+	),
+	NextSrcCol1 is SrcCol + 2,
+	NextSrcCol2 is SrcCol - 2,
+	(
+		(is_legit_eat_move(GameBoard, CurrentPlayerSign, SrcLine, SrcCol, NextSrcLine, NextSrcCol1, ResGameBoard1),
+		is_legit_recursive_eat_move(ResGameBoard1, CurrentPlayerSign, NextSrcLine, NextSrcCol1, DstLine, DstCol, ResGameBoard))
+		;
+		(is_legit_eat_move(GameBoard, CurrentPlayerSign, SrcLine, SrcCol, NextSrcLine, NextSrcCol2, ResGameBoard1), 
+		is_legit_recursive_eat_move(ResGameBoard1, CurrentPlayerSign, NextSrcLine, NextSrcCol2, DstLine, DstCol, ResGameBoard))
+	).
+	
+	
+
+%Given a game board, return all positions of a desired cell
+get_element_with_sign(GameBoard, Sign, Line, Column):-
+	arg(Index, GameBoard, Sign),
+	index_to_position(Index, Line, Column).
+
+%The eating move is valid only if there is an counter-soldier in the direction of the movement (affects the positive lines), whereas the positives of the columns change as needed
+
+check_desire_eat_move_position(GameBoard, CurrentPlayerSign, SrcLine, SrcCol, DstLine, DstCol):-
+	is_valid_position(SrcLine, SrcCol, DstLine, DstCol),
+	(
+		(CurrentPlayerSign=ww; CurrentPlayerSign=bb), 
+		two_steps_distance(DstLine, SrcLine), 
+		two_steps_distance(DstCol, SrcCol),
+		get_middle_element(SrcLine, SrcCol, DstLine, DstCol, MiddleLine, MiddleCol),
+		get_oposite_player_sign(CurrentPlayerSign, Oposite),
+		get_element_with_sign(GameBoard, Oposite, MiddleLine, MiddleCol)
+	)
+	;
+	(
+		CurrentPlayerSign=w, 
+		DstLine is SrcLine + 2, two_steps_distance(DstCol, SrcCol),
+		get_middle_element(SrcLine, SrcCol, DstLine, DstCol, MiddleLine, MiddleCol),
+		get_oposite_player_sign(CurrentPlayerSign, Oposite),
+		get_element_with_sign(GameBoard, Oposite, MiddleLine, MiddleCol)
+	)
+	;
+	(
+		CurrentPlayerSign=b, 
+		DstLine is SrcLine - 2, two_steps_distance(DstCol, SrcCol),
+		get_middle_element(SrcLine, SrcCol, DstLine, DstCol, MiddleLine, MiddleCol),
+		get_oposite_player_sign(CurrentPlayerSign, Oposite),
+		get_element_with_sign(GameBoard, Oposite, MiddleLine, MiddleCol)
+	).
+
+%The move is legitimate only if there is a counter-soldier in the direction of the movement (affects the positive lines), whereas the page charges change as necessary
+
+check_desire_move_position(GameBoard, CurrentPlayerSign, SrcLine, SrcCol, DstLine, DstCol):-
+	is_valid_position(SrcLine, SrcCol, DstLine, DstCol),
+	(
+		(CurrentPlayerSign=ww; CurrentPlayerSign=bb), 
+		one_steps_distance(DstLine, SrcLine), 
+		one_steps_distance(DstCol, SrcCol),
+		get_element_with_sign(GameBoard, e, DstLine, DstCol)
+	)
+	;
+	(
+		CurrentPlayerSign=w, 
+		DstLine is SrcLine + 1, 
+		one_steps_distance(DstCol, SrcCol),
+		get_element_with_sign(GameBoard, e, DstLine, DstCol)
+	)
+	;
+	(
+		CurrentPlayerSign=b, 
+		DstLine is SrcLine - 1, 
+		one_steps_distance(DstCol, SrcCol),
+		get_element_with_sign(GameBoard, e, DstLine, DstCol)
+	).
+
+
+%Checking eating distance
+two_steps_distance(Dst, Src):-	
+	(Dst is Src - 2,!) ; (Dst is Src + 2,!).
+
+%Checking move distance
+one_steps_distance(Dst, Src):-
+	(Dst is Src - 1,!) ; (Dst is Src + 1,!).
+	
+	
+get_middle_element(SrcLine, SrcCol, DstLine, DstCol, MiddleLine, MiddleCol):-
+	MiddleLine is (SrcLine + DstLine) / 2,
+	MiddleCol is (SrcCol + DstCol) / 2.
+
+insert_element_to_pos_in_board(GameBoard, 1, DstCol, b, ResGameBoard):-
+	insert_element_to_pos_in_board(GameBoard, 1, DstCol, kb, ResGameBoard),!.
+	
+insert_element_to_pos_in_board(GameBoard, BoardSize, DstCol, w, ResGameBoard):-
+	get_game_board_size(BoardSize),
+	insert_element_to_pos_in_board(GameBoard, BoardSize, DstCol, kw, ResGameBoard),!.
+
+insert_element_to_pos_in_board(GameBoard, DstLine, DstCol, Element, ResGameBoard):-
+	position_to_index(DstLine, DstCol, Pos),
+	board_list_switch(GameBoard, GameBoardList),
+	PosInList is Pos-1, %replace function list with index 0
+	replace(GameBoardList, PosInList, Element, NewGameList),
+	board_list_switch(NewGameList, ResGameBoard).
+	
+commit_move(GameBoard, SrcLine, SrcCol, DstLine, DstCol, ResGameBoard):-
+	get_soldier_or_king(GameBoard, SrcLine, SrcCol, Player),
+	get_player_sign(PlayerSign, Player), !,
+	get_legit_move(GameBoard, PlayerSign, ResGameBoard),
+	(
+		is_legit_recursive_eat_move(GameBoard, Player, SrcLine, SrcCol, DstLine, DstCol, ResGameBoard)
+		;
+		is_legit_movement(GameBoard, Player, SrcLine, SrcCol, DstLine, DstCol, ResGameBoard)
+	).
+	
