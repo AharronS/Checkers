@@ -1,18 +1,18 @@
+:-  ensure_loaded([basic_game_relations]).
+:-  ensure_loaded([useful_predicates]).
+:-  ensure_loaded([board]).
+:-  ensure_loaded([tui]).
+:-  ensure_loaded([alpha_beta]).
+
 %Check whether it is possible to make a eat move, otherwise check whether there is regular move.
 get_legit_move(GameBoard, CurrentPlayer, ResGameBoard):-
-	(
-		get_player_sign(CurrentPlayer, CurrentPlayerSign),
-		get_legit_eat_movement(GameBoard, CurrentPlayerSign, ResGameBoard)
-	)
-	;
-	(
-		not(
-			get_player_sign(CurrentPlayer, CurrentPlayerSign),			
-			get_legit_eat_movement(GameBoard, CurrentPlayerSign, ResGameBoard)
-		),
-		get_player_sign(CurrentPlayer, CurrentPlayerSign2),
-		get_legit_regular_movement(GameBoard, CurrentPlayerSign2, ResGameBoard)
-	).
+	get_player_sign(CurrentPlayer, CurrentPlayerSign),
+	get_legit_eat_movement(GameBoard, CurrentPlayerSign, ResGameBoard).
+get_legit_move(GameBoard, CurrentPlayer, ResGameBoard):-
+	not((get_player_sign(CurrentPlayer, CurrentPlayerSign),			
+		get_legit_eat_movement(GameBoard, CurrentPlayerSign, ResGameBoard))),
+	get_player_sign(CurrentPlayer, CurrentPlayerSign2),
+	get_legit_regular_movement(GameBoard, CurrentPlayerSign2, ResGameBoard).
 
 get_legit_regular_movement(GameBoard, CurrentPlayerSign, ResGameBoard):-
 	get_element_with_sign(GameBoard, CurrentPlayerSign, PlayerLine, PlayerCol), 
@@ -73,7 +73,7 @@ get_element_with_sign(GameBoard, Sign, Line, Column):-
 check_desire_eat_move_position(GameBoard, CurrentPlayerSign, SrcLine, SrcCol, DstLine, DstCol):-
 	is_valid_position(SrcLine, SrcCol, DstLine, DstCol),
 	(
-		(CurrentPlayerSign=ww; CurrentPlayerSign=bb), 
+		(CurrentPlayerSign=kw; CurrentPlayerSign=kb), 
 		two_steps_distance(DstLine, SrcLine), 
 		two_steps_distance(DstCol, SrcCol),
 		get_middle_element(SrcLine, SrcCol, DstLine, DstCol, MiddleLine, MiddleCol),
@@ -102,7 +102,7 @@ check_desire_eat_move_position(GameBoard, CurrentPlayerSign, SrcLine, SrcCol, Ds
 check_desire_move_position(GameBoard, CurrentPlayerSign, SrcLine, SrcCol, DstLine, DstCol):-
 	is_valid_position(SrcLine, SrcCol, DstLine, DstCol),
 	(
-		(CurrentPlayerSign=ww; CurrentPlayerSign=bb), 
+		(CurrentPlayerSign=kw; CurrentPlayerSign=kb), 
 		one_steps_distance(DstLine, SrcLine), 
 		one_steps_distance(DstCol, SrcCol),
 		get_element_with_sign(GameBoard, e, DstLine, DstCol)
@@ -148,7 +148,7 @@ insert_element_to_pos_in_board(GameBoard, DstLine, DstCol, Element, ResGameBoard
 	board_list_switch(GameBoard, GameBoardList),
 	PosInList is Pos-1, %replace function list with index 0
 	replace(GameBoardList, PosInList, Element, NewGameList),
-	board_list_switch(NewGameList, ResGameBoard).
+	board_list_switch(ResGameBoard, NewGameList).
 	
 commit_move(GameBoard, SrcLine, SrcCol, DstLine, DstCol, ResGameBoard):-
 	get_soldier_or_king(GameBoard, SrcLine, SrcCol, Player),

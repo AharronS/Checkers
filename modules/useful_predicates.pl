@@ -1,18 +1,8 @@
-%%swap element in list(from exam preparation lesson)
-%swap(L,Count1,Count2,Res):-
-%	swap(L,Count1,Count2,Data1,Data2,Res).
-%swap([Data2|Tail],0,1,Data1,Data2,[Data1|Tail]):-!.
-%swap([X|Tail],0,Count2,Data1,Data2,[X|Res]):-!,
-%	Next_Count2 is Count2 -1,
-%	swap(Tail,0,Next_Count2,Data1,Data2,Res).
-%swap([X|Tail],1,Count2,X,Data2,[Data2|Res]):-!,
-%	Next_Count2 is Count2 -1,
-%	swap(Tail,0,Next_Count2,X,Data2,Res).
-%swap([X|Tail],Count1,Count2,Data1,Data2,[X|Res]):-
-%	Next_Count2 is Count2 -1,
-%	Next_Count1 is Count1 -1,
-%	swap(Tail,Next_Count1,Next_Count2,Data1,Data2,Res).
-%
+:-  ensure_loaded([basic_game_relations]).
+:-  ensure_loaded([board]).
+:-  ensure_loaded([game_moves]).
+:-  ensure_loaded([tui]).
+:-  ensure_loaded([alpha_beta]).
 
 %with index 0!!!!
 replace([_|T], 0, X, [X|T]):-!.

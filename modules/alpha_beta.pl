@@ -1,3 +1,9 @@
+:-  ensure_loaded([basic_game_relations]).
+:-  ensure_loaded([useful_predicates]).
+:-  ensure_loaded([board]).
+:-  ensure_loaded([game_moves]).
+:-  ensure_loaded([tui]).
+
 %
 % Alpha-Beta implementation
 %

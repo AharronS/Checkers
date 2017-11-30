@@ -1,3 +1,9 @@
+:-  ensure_loaded([basic_game_relations]).
+:-  ensure_loaded([useful_predicates]).
+:-  ensure_loaded([game_moves]).
+:-  ensure_loaded([tui]).
+:-  ensure_loaded([alpha_beta]).
+
 %Always remember initiate this!
 init_game_board_size(Size):-
 	Size >= 8, %minimum board size

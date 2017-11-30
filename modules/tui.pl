@@ -1,6 +1,8 @@
 :-  ensure_loaded([basic_game_relations]).
 :-  ensure_loaded([useful_predicates]).
 :-  ensure_loaded([board]).
+:-  ensure_loaded([game_moves]).
+:-  ensure_loaded([alpha_beta]).
 
 
 print_game_board(GameBoard):-
@@ -77,6 +79,8 @@ print_soldier_row(BoardSize, Counter, [X|Xs], Res):-
 
 get_who_play_first(Choice):-
 	%o for computer start, x for user start.
+	write('Enter game size(The recommendation is 8):'),
+	read(Size), init_game_board_size(Size),
 	write('Who plays first? computer(o) or player(x):'),
 	read(TmpChoice),
 	((TmpChoice=x; TmpChoice=o), Choice=TmpChoice,!)
