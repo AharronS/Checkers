@@ -60,18 +60,17 @@ moves(Turn/Board, [X|Xs]) :-
 staticval( _/Board, Res) :-
            max_to_move(Comp/_),
            min_to_move(Human/_),
-           %next_player(Comp, Human),
-           count( Board, Comp, Res1),
-           count( Board, Human, Res2),
+           count_sign_on_board( Board, Comp, Res1),
+           count_sign_on_board( Board, Human, Res2),
            soldier_to_king(Comp, CompK),
            soldier_to_king(Human, HumanK),
-           count(Board, CompK, Res1k),
-           count(Board, HumanK, Res2k),
+           count_sign_on_board(Board, CompK, Res1k),
+           count_sign_on_board(Board, HumanK, Res2k),
            king_bonus(Board, CompK, Bonus),
            Res is (Res1 + (Res1k * 1.4)) - (Res2 + (Res2k * 1.4)) + Bonus.
 
 king_bonus(Board, Sign, Bonus) :-
-            findall(L/C, findPawn(Board, Sign, L, C), List),!,
+            findall(L/C, get_element_with_sign(Board, Sign, L, C), List),!,
             king_bonusL( List, Bonus, 0).
 
 king_bonusL( [], Bonus, Bonus).

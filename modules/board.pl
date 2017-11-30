@@ -96,7 +96,7 @@ count_sign_on_board(GameBoard, PlayerSign, ResCount):-
 	count_sign_in_list(GameBoardList, PlayerSign, ResCount, 0).
 
 get_soldier_or_king(GameBoard, Line, Col, PlayerSign):-
-	get_element_with_sign(GameBoard, Line, Col, PlayerSign),
+	get_element_with_sign(GameBoard, PlayerSign, Line, Col),
 	(PlayerSign=b ; PlayerSign=kb ; PlayerSign=w ; PlayerSign=kw).
 	
 	
