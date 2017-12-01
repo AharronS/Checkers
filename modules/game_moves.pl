@@ -165,6 +165,7 @@ insert_element_to_pos_in_board(GameBoard, DstLine, DstCol, Element, ResGameBoard
 	replace(GameBoardList, PosInList, Element, NewGameList),
 	board_list_switch(ResGameBoard, NewGameList).
 	
+%We check all legal moves with the desired action and see whether it is contained within these moves or not
 commit_move(GameBoard, SrcLine, SrcCol, DstLine, DstCol, ResGameBoard):-
 	get_soldier_or_king(GameBoard, SrcLine, SrcCol, Player),
 	get_player_sign(PlayerSign, Player), !,

@@ -18,6 +18,7 @@ init_game_board_size(Size):-
 get_game_board_size(BoardSize):-
 	board_size(BoardSize),!.
 
+%Location is valid if and only if its values are smaller than NXN
 is_valid_position(SrcLine, SrcColumn, DstLine, DstColumn):-
 	is_valid_position(SrcLine, SrcColumn),
 	is_valid_position(DstLine, DstColumn).
