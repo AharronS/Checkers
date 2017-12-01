@@ -1,3 +1,8 @@
+% Programmer: Aharon Shenvald - 200532521
+% File Name: basic_game_relations.pl
+% Date: 23/11/2017
+% Description: Artificial Intellegence Checkers Game
+
 get_oposite_player_sign(w, b).
 get_oposite_player_sign(w, kb).
 get_oposite_player_sign(kw, b).

@@ -1,3 +1,8 @@
+% Programmer: Aharon Shenvald - 200532521
+% File Name: alpha_beta.pl
+% Date: 23/11/2017
+% Description: Artificial Intellegence Checkers Game
+
 :-  ensure_loaded([basic_game_relations]).
 :-  ensure_loaded([useful_predicates]).
 :-  ensure_loaded([board]).
@@ -49,9 +54,6 @@ betterof( Pos, Val, _, Val1, Pos, Val) :-         % Pos better then Pos1
 
 betterof( _, _, Pos1, Val1, Pos1, Val1).             % Otherwise Pos1 better
 
-%
-% Alpha-Beta satellite relations
-%
 
 % Get a list of the valid moves that can be on the board
 moves(Turn/Board, [X|Xs]) :-
@@ -59,8 +61,7 @@ moves(Turn/Board, [X|Xs]) :-
        findall(NextTurn/NewBoard, get_legit_move(Board, Turn, NewBoard), [X|Xs]).
 
 	  
-% The hueristic function
-% The amount of the computers pawns minus the amount of the human pawns
+% hueristic function- The amount of the computers soldiers - the amount of the human pawns
 % a king is worth two standard pawns
 staticval( _/Board, Res) :-
            max_to_move(Comp/_),
@@ -71,18 +72,18 @@ staticval( _/Board, Res) :-
            soldier_to_king(Human, HumanK),
            count_sign_on_board(Board, CompK, Res1k),
            count_sign_on_board(Board, HumanK, Res2k),
-           king_bonus(Board, CompK, Bonus),
+           compensation_function(Board, CompK, Bonus),
            Res is (Res1 + (Res1k * 1.4)) - (Res2 + (Res2k * 1.4)) + Bonus.
 
-king_bonus(Board, Sign, Bonus) :-
-            findall(L/C, get_element_with_sign(Board, Sign, L, C), List),!,
-            king_bonusL( List, Bonus, 0).
+compensation_function(Board, Sign, Bonus) :-
+            findall(L/C, get_line_and_col_by_sign(Board, Sign, L, C), List),!,
+            compensation_function_list( List, Bonus, 0).
 
-king_bonusL( [], Bonus, Bonus).
-king_bonusL( [L/C|Xs], Bonus, Agg) :-
+compensation_function_list( [], Bonus, Bonus).
+compensation_function_list( [L/C|Xs], Bonus, Agg) :-
              ((L > 2, L < 7, B1 is 0.4,!) ;
              B1 is 0),
              ((C > 2, C < 7, B2 is 0.2,!) ;
              B2 is 0),
              Agg1 is Agg + B1 + B2,
-             king_bonusL(Xs, Bonus, Agg1).
+             compensation_function_list(Xs, Bonus, Agg1).

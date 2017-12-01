@@ -1,3 +1,9 @@
+% Programmer: Aharon Shenvald - 200532521
+% File Name: tui.pl
+% Date: 23/11/2017
+% Description: Artificial Intellegence Checkers Game
+
+
 :-  ensure_loaded([basic_game_relations]).
 :-  ensure_loaded([useful_predicates]).
 :-  ensure_loaded([board]).

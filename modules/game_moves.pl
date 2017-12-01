@@ -1,3 +1,8 @@
+% Programmer: Aharon Shenvald - 200532521
+% File Name: game_moves.pl
+% Date: 23/11/2017
+% Description: Artificial Intellegence Checkers Game
+
 :-  ensure_loaded([basic_game_relations]).
 :-  ensure_loaded([useful_predicates]).
 :-  ensure_loaded([board]).
@@ -15,8 +20,8 @@ get_legit_move(GameBoard, CurrentPlayer, ResGameBoard):-
 	get_legit_regular_movement(GameBoard, CurrentPlayerSign2, ResGameBoard).
 
 get_legit_regular_movement(GameBoard, CurrentPlayerSign, ResGameBoard):-
-	get_element_with_sign(GameBoard, CurrentPlayerSign, PlayerLine, PlayerCol), 
-	get_element_with_sign(GameBoard, e, EmptyLine, EmptyCol),
+	get_line_and_col_by_sign(GameBoard, CurrentPlayerSign, PlayerLine, PlayerCol), 
+	get_line_and_col_by_sign(GameBoard, e, EmptyLine, EmptyCol),
 	is_legit_movement(GameBoard, CurrentPlayerSign, PlayerLine, PlayerCol, EmptyLine, EmptyCol, ResGameBoard).
 	
 is_legit_movement(GameBoard, CurrentPlayerSign, SrcLine, SrcCol, DstLine, DstCol, ResGameBoard):-
@@ -26,8 +31,8 @@ is_legit_movement(GameBoard, CurrentPlayerSign, SrcLine, SrcCol, DstLine, DstCol
 	
 
 get_legit_eat_movement(GameBoard, CurrentPlayerSign, ResGameBoard):-
-	get_element_with_sign(GameBoard, CurrentPlayerSign, PlayerLine, PlayerCol), 
-	get_element_with_sign(GameBoard, e, EmptyLine, EmptyCol),
+	get_line_and_col_by_sign(GameBoard, CurrentPlayerSign, PlayerLine, PlayerCol), 
+	get_line_and_col_by_sign(GameBoard, e, EmptyLine, EmptyCol),
 	is_legit_recursive_eat_move(GameBoard, CurrentPlayerSign, PlayerLine, PlayerCol, EmptyLine, EmptyCol, ResGameBoard).
 
 %try to generate regular eat move
@@ -69,6 +74,13 @@ get_element_with_sign(GameBoard, Sign, Line, Column):-
     -> (arg(Index, GameBoard, Sign), index_to_position(Index, Line, Column))
     ;  (position_to_index(Line, Column, Index), arg(Index, GameBoard, Sign))  
      ).
+	 
+get_line_and_col_by_sign( GameBoard, S, Line, Col) :-
+          arg(Num, GameBoard, S),
+		  get_game_board_size(BoardSize),
+          Temp is Num / BoardSize,
+          ceiling(Temp, Line),
+          Col is Num - ((Line - 1) * BoardSize).
 	
 
 %The eating move is valid only if there is an counter-soldier in the direction of the movement (affects the positive lines), whereas the positives of the columns change as needed
@@ -157,5 +169,9 @@ commit_move(GameBoard, SrcLine, SrcCol, DstLine, DstCol, ResGameBoard):-
 	get_soldier_or_king(GameBoard, SrcLine, SrcCol, Player),
 	get_player_sign(PlayerSign, Player), !,
 	get_legit_move(GameBoard, PlayerSign, ResGameBoard),
-	(is_legit_recursive_eat_move(GameBoard, Player, SrcLine, SrcCol, DstLine, DstCol, ResGameBoard); is_legit_movement(GameBoard, Player, SrcLine, SrcCol, DstLine, DstCol, ResGameBoard)).
+	(
+		is_legit_recursive_eat_move(GameBoard, Player, SrcLine, SrcCol, DstLine, DstCol, ResGameBoard)
+		; 
+		is_legit_movement(GameBoard, Player, SrcLine, SrcCol, DstLine, DstCol, ResGameBoard)
+	).
 	
