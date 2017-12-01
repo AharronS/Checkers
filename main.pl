@@ -1,3 +1,10 @@
+% Programmer: Aharon Shenvald - 200532521
+% File Name: main.pl
+% Date: 23/11/2017
+% Description: Artificial Intellegence Checkers Game
+% Synopsys: To play the game, enter the following command:
+%			start_game.
+
 :-  ensure_loaded([modules/basic_game_relations]).
 :-  ensure_loaded([modules/useful_predicates]).
 :-  ensure_loaded([modules/board]).
@@ -5,7 +12,7 @@
 :-  ensure_loaded([modules/tui]).
 :-  ensure_loaded([modules/alpha_beta]).
 
-
+%The Predicate checks the desired settings and starts the game
 start_game:-
 	get_who_play_first(UserChoice),
 	generate_game_board(w, b, e, x, GameBoard),
@@ -13,7 +20,8 @@ start_game:-
     -> human_start(GameBoard)
     ;  computer_start(GameBoard)  
      ).
-	
+
+%If the opposing player can not make a move, the opponent loses.
 goal(GameBoard, WinPlayer) :-
 	next_turn(WinPlayer, LoosPlayer),
 	findall(NewBoard, (get_player_sign(LoosPlayer,LoosPlayerSign),get_legit_move(GameBoard, LoosPlayerSign, NewBoard)), []),!.
@@ -42,11 +50,12 @@ play(human, PlayerSign, GameBoard) :-
 	)
 	;
 	(
+		%The player has entered an invalid move
 		write('Illegal move.'),nl,
 		play(human, PlayerSign, GameBoard)
 	).
 
-% Get the computer's next move using alphabeta algorithm.
+% Get the computer's next move using alphabeta algorithm(The level of difficulty depending on the depth of the search).
 play(computer, ComputerSign, GameBoard) :-
 	get_difficulty(Difficult),
 	alphabeta(ComputerSign/GameBoard, -100, 100, NextPlayer/NewGameBoard, _, Difficult),
