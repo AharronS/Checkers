@@ -63,11 +63,6 @@ is_legit_recursive_eat_move(GameBoard, CurrentPlayerSign, SrcLine, SrcCol, DstLi
 	
 	
 
-%%Given a game board, return all positions of a desired cell
-%get_element_with_sign(GameBoard, Sign, Line, Column):-
-%	arg(Index, GameBoard, Sign),
-%	index_to_position(Index, Line, Column).
-
 %Given a game board, return all positions of a desired cell
 get_element_with_sign(GameBoard, Sign, Line, Column):-
 	(  atomic(Sign)
