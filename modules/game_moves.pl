@@ -147,7 +147,7 @@ get_middle_element(SrcLine, SrcCol, DstLine, DstCol, MiddleLine, MiddleCol):-
 insert_element_to_pos_in_board(GameBoard, 1, DstCol, b, ResGameBoard):-
 	insert_element_to_pos_in_board(GameBoard, 1, DstCol, kb, ResGameBoard),!.
 	
-insert_element_to_pos_in_board(GameBoard, BoardSize, DstCol, w, ResGameBoard):-
+insert_element_to_pos_in_board(GameBoard, 8, DstCol, w, ResGameBoard):-
 	get_game_board_size(BoardSize),
 	insert_element_to_pos_in_board(GameBoard, BoardSize, DstCol, kw, ResGameBoard),!.
 
@@ -162,9 +162,5 @@ commit_move(GameBoard, SrcLine, SrcCol, DstLine, DstCol, ResGameBoard):-
 	get_soldier_or_king(GameBoard, SrcLine, SrcCol, Player),
 	get_player_sign(PlayerSign, Player), !,
 	get_legit_move(GameBoard, PlayerSign, ResGameBoard),
-	(
-		is_legit_recursive_eat_move(GameBoard, Player, SrcLine, SrcCol, DstLine, DstCol, ResGameBoard)
-		;
-		is_legit_movement(GameBoard, Player, SrcLine, SrcCol, DstLine, DstCol, ResGameBoard)
-	).
+	(is_legit_recursive_eat_move(GameBoard, Player, SrcLine, SrcCol, DstLine, DstCol, ResGameBoard); is_legit_movement(GameBoard, Player, SrcLine, SrcCol, DstLine, DstCol, ResGameBoard)).
 	

@@ -14,7 +14,6 @@ start_game:-
     ;  computer_start(GameBoard)  
      ).
 	
-	
 goal(GameBoard, WinPlayer) :-
 	next_turn(WinPlayer, LoosPlayer),
 	findall(NewBoard, (get_player_sign(LoosPlayer,LoosPlayerSign),get_legit_move(GameBoard, LoosPlayerSign, NewBoard)), []),!.
@@ -49,21 +48,11 @@ play(human, PlayerSign, GameBoard) :-
 
 % Get the computer's next move using alphabeta algorithm.
 play(computer, ComputerSign, GameBoard) :-
-     alphabeta(ComputerSign/GameBoard, -100, 100, NextPlayer/NewGameBoard, _, 2),
-     play(human, NextPlayer, NewGameBoard).
-
-%quit if the user enter "stop"
-check_user_move(_, stop, _, _, _, _) :- clear.
-check_user_move(_, _, stop, _, _, _) :- clear.
-check_user_move(_, _, _, stop, _, _) :- clear.
-check_user_move(_, _, _, _, stop, _) :- clear.
-
+	get_difficulty(Difficult),
+	alphabeta(ComputerSign/GameBoard, -100, 100, NextPlayer/NewGameBoard, _, Difficult),
+	play(human, NextPlayer, NewGameBoard).
 
 check_user_move(PlayerSign, SrcLine, SrcCol, DstLine, DstCol, GameBoard) :-
-              commit_move(GameBoard, SrcLine, SrcCol, DstLine, DstCol, ResGameBoard),
-              next_turn(PlayerSign, Next),
-              play(computer, Next, ResGameBoard).
-			  
-clear :-
-      retractall(max_to_move(_)),
-      retractall(min_to_move(_)),!.
+	commit_move(GameBoard, SrcLine, SrcCol, DstLine, DstCol, ResGameBoard),
+	next_turn(PlayerSign, Next),
+	play(computer, Next, ResGameBoard).

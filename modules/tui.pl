@@ -81,6 +81,8 @@ get_who_play_first(Choice):-
 	%o for computer start, x for user start.
 	write('Enter game size(The recommendation is 8):'),
 	read(Size), init_game_board_size(Size),
+	write('Enter the difficulty level you want(2 to 5):'),
+	read(DifficultyLevel), init_level_of_difficulty(DifficultyLevel),
 	write('Who plays first? computer(o) or player(x):'),
 	read(TmpChoice),
 	((TmpChoice=x; TmpChoice=o), Choice=TmpChoice,!)

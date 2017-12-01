@@ -4,11 +4,16 @@
 :-  ensure_loaded([game_moves]).
 :-  ensure_loaded([tui]).
 
-%
-% Alpha-Beta implementation
-%
+init_level_of_difficulty(Difficulty):-
+	Difficulty >= 2,
+	Difficulty =< 5,
+	retractall(difficult(_)),
+	assert(difficult(Difficulty)),!.
+get_difficulty(Difficulty):-
+	difficult(Difficulty).
 
-% alphabeta algorithm
+% alphabeta algorithm(from book - http://media.pearsoncmg.com/intl/ema/ema_uk_he_bratko_prolog_3/prolog/ch22/fig22_5.txt)
+
 alphabeta( Pos, Alpha, Beta, GoodPos, Val, Depth) :-
            Depth > 0, moves( Pos, PosList), !,
            boundedbest( PosList, Alpha, Beta, GoodPos, Val, Depth);
