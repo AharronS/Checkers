@@ -81,9 +81,9 @@ compensation_function(Board, Sign, Bonus) :-
 
 compensation_function_list( [], Bonus, Bonus).
 compensation_function_list( [L/C|Xs], Bonus, Agg) :-
-             ((L > 2, L < 7, B1 is 0.4,!) ;
+             ((L > 2, L < 7, B1 is 0.3,!) ;
              B1 is 0),
-             ((C > 2, C < 7, B2 is 0.2,!) ;
+             ((C > 2, C < 7, B2 is 0.3,!) ;
              B2 is 0),
              Agg1 is Agg + B1 + B2,
              compensation_function_list(Xs, Bonus, Agg1).
